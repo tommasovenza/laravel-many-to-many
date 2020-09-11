@@ -30,7 +30,7 @@
   <input type="text" name="plate" value="{{ old('plate')}}" placeholder="plate">
   <br>
   <br>
-  <div class="chekboxes">
+  <div class="checkboxes">
     <span>Type:</span>
     @foreach ($tags as $tag)
       <div>

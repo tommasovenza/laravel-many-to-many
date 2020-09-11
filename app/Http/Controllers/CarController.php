@@ -75,6 +75,7 @@ class CarController extends Controller
     public function show(Car $car)
     {
       // dd($car->tags);
+
       return view('cars.show', compact('car'));
     }
 
@@ -84,9 +85,14 @@ class CarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
+    public function edit(Car $car)
+    {   
+        // laravel fa il find per noi
+        
+        $tags = Tag::all();
+        $users = User::all();
+
+        return view('cars.edit', compact('car', 'tags', 'users'));
     }
 
     /**
@@ -96,11 +102,16 @@ class CarController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+    public function update(Request $request, Car $car)
+    {   
+        $request->validate($this->validationData());
 
+        $data = $request->all();
+        $car->update($data);
+        
+        return redirect()->route('cars.show', $car); 
+    }
+ 
     /**
      * Remove the specified resource from storage.
      *
@@ -110,7 +121,7 @@ class CarController extends Controller
     public function destroy($id)
     {
         //
-    }
+    } 
 
     public function validationData() {
       return [
