@@ -12,7 +12,7 @@ class Car extends Model
     'year',
     'engine',
     'plate',
-  ];
+  ];  
 
   public function user()
   {
