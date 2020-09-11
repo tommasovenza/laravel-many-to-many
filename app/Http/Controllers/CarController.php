@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Car;
+use App\Tag;
+use App\User;
 
 class CarController extends Controller
 {
@@ -14,7 +16,10 @@ class CarController extends Controller
      */
     public function index()
     {
+      $cars = Car::all();
 
+      // dd($cars);
+      return view('cars.index', compact('cars'));
     }
 
     /**
@@ -24,7 +29,10 @@ class CarController extends Controller
      */
     public function create()
     {
-        //
+        $tags = Tag::all();
+        $users = User::all();
+
+        return view('cars.create', compact('tags', 'users'));
     }
 
     /**
@@ -35,7 +43,27 @@ class CarController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validazione
+        $request->validate($this->validationData());
+
+        $requested_data = $request->all();
+        // dd($requested_data);
+
+        // Nuova istanza Car
+        $new_car = new Car();
+        $new_car->manifacturer = $requested_data['manifacturer'];
+        $new_car->year = $requested_data['year'];
+        $new_car->engine = $requested_data['engine'];
+        $new_car->plate = $requested_data['plate'];
+        $new_car->user_id = $requested_data['user_id'];
+        $new_car->save();
+
+        if (isset($requested_data['tags'])) {
+          $new_car->tags()->sync($requested_data['tags']);
+        }
+
+        return redirect()->route('cars.show', $new_car);
+
     }
 
     /**
@@ -46,7 +74,8 @@ class CarController extends Controller
      */
     public function show(Car $car)
     {
-      dd($car->tags);
+      // dd($car->tags);
+      return view('cars.show', compact('car'));
     }
 
     /**
@@ -81,5 +110,15 @@ class CarController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function validationData() {
+      return [
+        'manifacturer' => 'required|max:255',
+        'year' => 'required|integer|min:1990|max:2020',
+        'engine' => 'required|max:255',
+        'plate' => 'required|max:255',
+        'user_id' => 'required|integer',
+      ];
     }
 }
